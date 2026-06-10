@@ -76,9 +76,15 @@ def test_train_xgboost_custom_params(tiny_splits) -> None:
 
 
 def test_train_xgboost_perfect_train_accuracy(tiny_splits) -> None:
-    """Un modèle sans contrainte doit mémoriser les données d'entraînement."""
+    """Un modèle sans contrainte doit mémoriser les données d'entraînement.
+
+    On force des params non régularisés : les params tunés (best_params.json)
+    contraignent le modèle et l'empêchent de mémoriser un petit dataset.
+    """
     X_train, _, y_train, _ = tiny_splits
-    model = train_xgboost(X_train, y_train)
+    model = train_xgboost(X_train, y_train, params={
+        "max_depth": 6, "min_child_weight": 1, "reg_alpha": 0.0, "reg_lambda": 1.0,
+    })
     preds = model.predict(X_train)
     accuracy = (preds == y_train.values).mean()
     assert accuracy == 1.0
