@@ -207,5 +207,6 @@ Les features XP (`xp_ratio`, `log_xp_raw`, `log_xp_adjusted`) sont exclues — e
 | Modèles | scikit-learn, xgboost |
 | Visualisation | matplotlib, seaborn, yellowbrick |
 | Interprétabilité | shap |
+| Suivi d'entraînement | tqdm (barres de progression), xgboost eval_set (courbe de loss) |
 | Tests | pytest |
 | API (Phase 7) | fastapi, pydantic, uvicorn |
