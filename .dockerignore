@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.git/
+notebooks/
+data/
+results/
+tests/
+requirements-dev.txt
+*.ipynb

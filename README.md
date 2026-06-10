@@ -149,8 +149,16 @@ python src/infer.py --example --json
 
 ### API REST (Phase 7)
 
+**Sans Docker**
+
 ```bash
 uvicorn api.main:app --reload
+```
+
+**Avec Docker**
+
+```bash
+docker compose up --build
 ```
 
 L'API démarre sur `http://localhost:8000`. Documentation interactive disponible sur `/docs`.
