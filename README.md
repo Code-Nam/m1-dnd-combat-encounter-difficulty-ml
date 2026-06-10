@@ -31,10 +31,12 @@ Les erreurs du modèle se concentrent aux frontières entre classes adjacentes (
 │   ├── 03_encounter_generation.ipynb
 │   ├── 04_feature_engineering.ipynb
 │   ├── 05_base_model.ipynb         # LR, DT, RF, XGBoost + comparatif
-│   └── 06_analysis.ipynb           # SHAP, comparaison DMG, bilan
+│   ├── 06_analysis.ipynb           # SHAP, comparaison DMG, bilan
+│   └── 07_hyperparameter_tuning.ipynb  # CV baseline, RandomizedSearch, early stopping
 ├── results/
 │   ├── 05_base_model/        # Graphiques des modèles (evaluation, learning curves...)
-│   └── 06_analysis/          # SHAP plots, waterfall, comparaison DMG
+│   ├── 06_analysis/          # SHAP plots, waterfall, comparaison DMG
+│   └── 07_hyperparameter_tuning/   # CV scores, impact params, baseline vs tuné
 ├── src/
 │   ├── fetch_monsters.py     # Téléchargement du bestiaire (API Open5e)
 │   ├── fetch_characters.py   # Téléchargement des personnages
@@ -175,7 +177,7 @@ pytest tests/ -v
 jupyter notebook
 ```
 
-Les notebooks sont numérotés dans l'ordre d'exécution (02 → 06).
+Les notebooks sont numérotés dans l'ordre d'exécution (02 → 07).
 
 ---
 
