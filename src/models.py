@@ -24,9 +24,10 @@ from sklearn.metrics import (
 )
 from xgboost import XGBClassifier
 
-PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
-MODELS_DIR    = Path(__file__).resolve().parent.parent / "models"
-RESULTS_DIR   = Path(__file__).resolve().parent.parent / "results"
+PROCESSED_DIR    = Path(__file__).resolve().parent.parent / "data" / "processed"
+MODELS_DIR       = Path(__file__).resolve().parent.parent / "models"
+RESULTS_DIR      = Path(__file__).resolve().parent.parent / "results"
+BEST_PARAMS_PATH = RESULTS_DIR / "07_hyperparameter_tuning" / "best_params.json"
 
 LABEL_NAMES: list[str] = ["Easy", "Medium", "Hard", "Deadly"]
 
@@ -45,6 +46,18 @@ XGB_PARAMS: dict = {
     "random_state":  42,
     "n_jobs":        -1,
 }
+
+
+def load_best_params() -> dict:
+    """Charge les hyperparamètres tuned depuis le JSON du notebook 07, sinon XGB_PARAMS.
+
+    Returns:
+        Dictionnaire d'hyperparamètres prêt à passer à XGBClassifier.
+    """
+    if BEST_PARAMS_PATH.exists():
+        tuned = json.loads(BEST_PARAMS_PATH.read_text(encoding="utf-8"))
+        return {**XGB_PARAMS, **tuned}
+    return XGB_PARAMS
 
 
 def load_data(
@@ -80,7 +93,7 @@ def train_xgboost(
     Returns:
         Modèle entraîné.
     """
-    hp = {**XGB_PARAMS, **(params or {})}
+    hp = {**load_best_params(), **(params or {})}
     model = XGBClassifier(**hp)
     model.fit(X_train, y_train)
     return model
@@ -127,7 +140,7 @@ def evaluate(
         "gap_pp":           float(gap),
         "f1_per_class":     {label: round(float(f1), 4) for label, f1 in zip(LABEL_NAMES, f1_per_class)},
         "confusion_matrix": cm,
-        "hyperparameters":  XGB_PARAMS,
+        "hyperparameters":  load_best_params(),
     }
 
 

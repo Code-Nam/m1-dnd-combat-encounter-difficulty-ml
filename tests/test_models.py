@@ -11,7 +11,42 @@ import pandas as pd
 import pytest
 from xgboost import XGBClassifier
 
-from src.models import evaluate, load_model, save_metrics, save_model, train_xgboost
+from src.models import evaluate, load_best_params, load_model, save_metrics, save_model, train_xgboost
+
+
+# ---------------------------------------------------------------------------
+# load_best_params
+# ---------------------------------------------------------------------------
+
+
+def test_load_best_params_returns_dict() -> None:
+    params = load_best_params()
+    assert isinstance(params, dict)
+
+
+def test_load_best_params_has_required_keys() -> None:
+    required = {"n_estimators", "learning_rate", "max_depth", "subsample",
+                "objective", "num_class", "eval_metric", "random_state"}
+    assert required.issubset(load_best_params().keys())
+
+
+def test_load_best_params_fallback_without_json(tmp_path, monkeypatch) -> None:
+    """Sans best_params.json, doit retourner XGB_PARAMS par défaut."""
+    import src.models as m
+    monkeypatch.setattr(m, "BEST_PARAMS_PATH", tmp_path / "nonexistent.json")
+    params = load_best_params()
+    assert params["n_estimators"] == m.XGB_PARAMS["n_estimators"]
+
+
+def test_load_best_params_loads_json(tmp_path, monkeypatch) -> None:
+    """Avec best_params.json, les valeurs tuned remplacent XGB_PARAMS."""
+    import json, src.models as m
+    json_path = tmp_path / "best_params.json"
+    json_path.write_text(json.dumps({"n_estimators": 42, "max_depth": 3}), encoding="utf-8")
+    monkeypatch.setattr(m, "BEST_PARAMS_PATH", json_path)
+    params = load_best_params()
+    assert params["n_estimators"] == 42
+    assert params["max_depth"] == 3
 
 
 # ---------------------------------------------------------------------------
