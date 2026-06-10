@@ -6,5 +6,6 @@ notebooks/
 data/
 results/
 tests/
+webapp/
 requirements-dev.txt
 *.ipynb

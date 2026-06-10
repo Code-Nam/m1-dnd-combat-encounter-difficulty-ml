@@ -1,0 +1,533 @@
+/* ── Thème D&D — mobile-first ─────────────────────────────────────────────── */
+
+:root {
+  --bg:             #15100c;
+  --bg-vignette:    radial-gradient(ellipse at 50% 0%, #241a12 0%, #15100c 70%);
+  --parchment:      #f1e3c3;
+  --parchment-deep: #e5d2a4;
+  --ink:            #2b2014;
+  --ink-soft:       #5a4a33;
+  --gold:           #c9a227;
+  --gold-soft:      #9c8338;
+  --blood:          #7a1d1d;
+  --blood-bright:   #9c2626;
+  --border-dark:    #3d2e1a;
+
+  --easy:   #3a7d44;
+  --medium: #b8860b;
+  --hard:   #c25e10;
+  --deadly: #8b1313;
+
+  --heading: 'Cinzel', 'Georgia', serif;
+  --body:    'Alegreya', 'Georgia', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--parchment);
+  background: var(--bg) var(--bg-vignette);
+  background-attachment: fixed;
+  min-height: 100svh;
+}
+
+#root {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 12px 96px;
+}
+
+/* ── En-tête ──────────────────────────────────────────────────────────────── */
+
+.app-header {
+  text-align: center;
+  padding: 28px 8px 18px;
+  border-bottom: 3px double var(--gold-soft);
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: 1.55rem;
+  letter-spacing: 0.06em;
+  margin: 0;
+  color: var(--gold);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.app-header p {
+  margin: 6px 0 0;
+  font-style: italic;
+  color: #b9a983;
+  font-size: 0.95rem;
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────────── */
+
+.section-title {
+  font-family: var(--heading);
+  font-weight: 500;
+  font-size: 1.15rem;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 26px 0 12px;
+}
+
+.section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--gold-soft), transparent);
+}
+
+/* ── Cartes parchemin ─────────────────────────────────────────────────────── */
+
+.card {
+  background: linear-gradient(160deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+  color: var(--ink);
+  border: 2px solid var(--border-dark);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 39, 0.35),
+    0 4px 14px rgba(0, 0, 0, 0.45);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.card-header h3 {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+  color: var(--blood);
+}
+
+.card-icon {
+  flex-shrink: 0;
+}
+
+.name-input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--blood);
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed transparent;
+  padding: 2px 4px;
+}
+
+.name-input::placeholder {
+  color: var(--blood);
+  opacity: 0.65;
+}
+
+.name-input:hover {
+  border-bottom-color: var(--gold-soft);
+}
+
+.name-input:focus {
+  outline: none;
+  border-bottom: 1px solid var(--gold);
+}
+
+.remove-btn {
+  background: none;
+  border: 1px solid var(--ink-soft);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 0.85rem;
+  color: var(--blood);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.remove-btn:hover {
+  background: var(--blood);
+  color: var(--parchment);
+}
+
+/* ── Steppers (grille de stats) ───────────────────────────────────────────── */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 8px;
+}
+
+.stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stepper-label {
+  font-family: var(--heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.stepper-controls {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid var(--ink-soft);
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 252, 240, 0.65);
+}
+
+.stepper-btn {
+  border: none;
+  background: var(--blood);
+  color: var(--parchment);
+  font-size: 0.7rem;
+  width: 30px;
+  min-height: 38px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.stepper-btn:active {
+  background: var(--blood-bright);
+}
+
+.stepper-input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--ink);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.stepper-input::-webkit-outer-spin-button,
+.stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-input:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+/* ── Boutons ──────────────────────────────────────────────────────────────── */
+
+.btn {
+  font-family: var(--heading);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.05s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-add {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.9rem;
+  background: transparent;
+  border: 2px dashed var(--gold-soft);
+  color: var(--gold);
+}
+
+.btn-add:hover:not(:disabled) {
+  background: rgba(201, 162, 39, 0.08);
+}
+
+.btn-add:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-predict {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92%, 480px);
+  padding: 15px;
+  font-size: 1.05rem;
+  background: linear-gradient(180deg, var(--blood-bright), var(--blood));
+  border: 2px solid var(--gold);
+  color: var(--parchment);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  z-index: 20;
+}
+
+.btn-predict:active {
+  transform: translateX(-50%) scale(0.98);
+}
+
+.btn-predict:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Recherche de monstres ────────────────────────────────────────────────── */
+
+.monster-search {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: var(--body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: rgba(255, 252, 240, 0.92);
+  border: 2px solid var(--border-dark);
+  border-radius: 8px;
+}
+
+.search-input:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: -1px;
+}
+
+.search-status {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #b9a983;
+  margin: 6px 2px 0;
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: var(--parchment);
+  border: 2px solid var(--border-dark);
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6);
+  max-height: 320px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+}
+
+.search-result {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.search-result:hover {
+  background: rgba(122, 29, 29, 0.12);
+}
+
+.search-result .name {
+  font-weight: 600;
+  color: var(--blood);
+}
+
+.search-result .meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+/* ── Monstres sélectionnés ────────────────────────────────────────────────── */
+
+.monster-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.monster-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.monster-info .name {
+  font-weight: 600;
+  color: var(--blood);
+  display: block;
+}
+
+.monster-info .meta {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.monster-qty {
+  width: 116px;
+  flex-shrink: 0;
+}
+
+.empty-hint {
+  text-align: center;
+  font-style: italic;
+  color: #b9a983;
+  padding: 18px 10px;
+  border: 2px dashed #4a3a24;
+  border-radius: 8px;
+}
+
+/* ── Résumé de la rencontre ───────────────────────────────────────────────── */
+
+.encounter-summary {
+  text-align: center;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #b9a983;
+  margin: 16px 0;
+}
+
+/* ── Résultat ─────────────────────────────────────────────────────────────── */
+
+.result-banner {
+  text-align: center;
+  padding: 18px 14px;
+  border-radius: 8px;
+  border: 2px solid var(--gold);
+  margin-bottom: 12px;
+  color: var(--parchment);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.result-banner.easy   { background: linear-gradient(180deg, #46955200, transparent), var(--easy); }
+.result-banner.medium { background: var(--medium); }
+.result-banner.hard   { background: var(--hard); }
+.result-banner.deadly { background: var(--deadly); }
+
+.result-banner .icon {
+  font-size: 2rem;
+  display: block;
+}
+
+.result-banner .label {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.result-banner .confidence {
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.95;
+}
+
+.proba-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 52px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.proba-row .proba-label {
+  font-family: var(--heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.proba-track {
+  height: 12px;
+  background: rgba(43, 32, 20, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.proba-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.proba-fill.easy   { background: var(--easy); }
+.proba-fill.medium { background: var(--medium); }
+.proba-fill.hard   { background: var(--hard); }
+.proba-fill.deadly { background: var(--deadly); }
+
+.proba-row .proba-value {
+  text-align: right;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.error-box {
+  background: rgba(122, 29, 29, 0.25);
+  border: 2px solid var(--blood-bright);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #f0c8c8;
+  font-size: 0.92rem;
+  margin: 14px 0;
+}
+
+/* ── Écrans larges ────────────────────────────────────────────────────────── */
+
+@media (min-width: 640px) {
+  .app-header h1 {
+    font-size: 2rem;
+  }
+
+  .party-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .party-grid .card {
+    margin-bottom: 0;
+  }
+
+  .party-grid .btn-add {
+    grid-column: 1 / -1;
+  }
+}

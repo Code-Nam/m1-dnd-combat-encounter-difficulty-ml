@@ -44,12 +44,13 @@ Les erreurs du modèle se concentrent aux frontières entre classes adjacentes (
 │   ├── features.py           # Feature engineering + train/test split
 │   ├── models.py             # Entraînement, évaluation, sauvegarde XGBoost
 │   └── infer.py              # Script d'inférence CLI
-└── tests/
-    ├── conftest.py
-    ├── test_data_generator.py
-    ├── test_features.py
-    ├── test_models.py
-    └── test_api.py
+├── tests/
+│   ├── conftest.py
+│   ├── test_data_generator.py
+│   ├── test_features.py
+│   ├── test_models.py
+│   └── test_api.py
+└── webapp/                   # SPA React + Vite (interface de l'API)
 ```
 
 ---
@@ -149,19 +150,24 @@ python src/infer.py --example --json
 
 ### API REST (Phase 7)
 
+Configuration optionnelle via `api/.env` (copier `api/.env.example`) :
+`MODEL_PATH` (chemin du modèle) et `CORS_ORIGINS` (origines autorisées).
+
 **Sans Docker**
 
 ```bash
 uvicorn api.main:app --reload
 ```
 
-**Avec Docker**
+**Avec Docker (API + webapp, hot reload)**
 
 ```bash
 docker compose up --build
 ```
 
-L'API démarre sur `http://localhost:8000`. Documentation interactive disponible sur `/docs`.
+L'API démarre sur `http://localhost:8000` (documentation interactive sur `/docs`)
+et la webapp sur `http://localhost:5173`. Les dossiers `api/`, `src/` et `webapp/`
+sont montés en volume : les modifications de code rechargent automatiquement.
 
 **Endpoint principal**
 
@@ -200,6 +206,21 @@ Content-Type: application/json
 ```
 
 Les features dérivées (`cr_level_delta`, `hp_ratio`, `ac_gap`…) sont calculées automatiquement — seules les stats brutes sont nécessaires.
+
+### Webapp (interface graphique)
+
+SPA React + Vite, mobile-first, thème D&D : saisie des personnages (1-6), recherche
+de monstres dans le bestiaire [Open5e](https://open5e.com), prédiction via l'API.
+
+```bash
+# Terminal 1 — l'API
+uvicorn api.main:app --reload
+
+# Terminal 2 — la webapp
+cd webapp && npm install && npm run dev
+```
+
+L'app démarre sur `http://localhost:5173`. Voir `webapp/README.md` pour les détails.
 
 ---
 
