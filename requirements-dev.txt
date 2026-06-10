@@ -1,0 +1,15 @@
+# Dépendances de DÉVELOPPEMENT (exploration, visualisation, notebooks, tests).
+# Inclut toutes les dépendances de production.
+# Installation : pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+# --- Notebooks interactifs ---
+jupyter==1.1.1
+
+# --- Visualisation ---
+matplotlib==3.10.9
+seaborn==0.13.2
+
+# --- Tests ---
+pytest==9.0.3
