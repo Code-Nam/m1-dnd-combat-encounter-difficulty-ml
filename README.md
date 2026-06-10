@@ -48,7 +48,8 @@ Les erreurs du modèle se concentrent aux frontières entre classes adjacentes (
     ├── conftest.py
     ├── test_data_generator.py
     ├── test_features.py
-    └── test_models.py
+    ├── test_models.py
+    └── test_api.py
 ```
 
 ---
@@ -217,7 +218,7 @@ python src/models.py
 pytest tests/ -v
 ```
 
-47 tests couvrant `data_generator`, `features` et `models`.
+73 tests couvrant `data_generator`, `features`, `models` et l'API REST.
 
 ### Notebooks
 
