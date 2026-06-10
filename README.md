@@ -146,6 +146,54 @@ python src/infer.py --example --json
 }
 ```
 
+### API REST (Phase 7)
+
+```bash
+uvicorn api.main:app --reload
+```
+
+L'API démarre sur `http://localhost:8000`. Documentation interactive disponible sur `/docs`.
+
+**Endpoint principal**
+
+```
+POST /predict
+Content-Type: application/json
+```
+
+```json
+{
+  "party_size": 4,
+  "party_avg_level": 5.0,
+  "party_avg_hp": 35.0,
+  "party_avg_ac": 14.0,
+  "party_avg_str": 12.0,
+  "party_avg_dex": 13.0,
+  "party_avg_con": 12.0,
+  "monster_count": 5,
+  "monster_avg_cr": 0.5,
+  "monster_avg_hp": 15.0,
+  "monster_avg_ac": 13.0
+}
+```
+
+```json
+{
+  "difficulty": "Hard",
+  "confidence": 84.2,
+  "probabilities": {
+    "Easy": 1.1,
+    "Medium": 8.3,
+    "Hard": 84.2,
+    "Deadly": 6.4
+  }
+}
+```
+
+Les features dérivées (`cr_level_delta`, `hp_ratio`, `ac_gap`…) sont calculées automatiquement — seules les stats brutes sont nécessaires.
+
+---
+
 ### Pipeline complet (re-génération depuis zéro)
 
 ```bash
