@@ -510,6 +510,34 @@ body {
   margin: 14px 0;
 }
 
+.warning-box {
+  background: rgba(201, 162, 39, 0.1);
+  border: 2px solid var(--gold-soft);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #e8d49a;
+  font-size: 0.9rem;
+  margin: 12px 0 0;
+}
+
+.reset-row {
+  text-align: center;
+  margin: 0 0 12px;
+}
+
+.btn-reset {
+  background: transparent;
+  border: 1px solid var(--gold-soft);
+  color: #b9a983;
+  font-size: 0.78rem;
+  padding: 7px 14px;
+}
+
+.btn-reset:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
 /* ── Écrans larges ────────────────────────────────────────────────────────── */
 
 @media (min-width: 640px) {

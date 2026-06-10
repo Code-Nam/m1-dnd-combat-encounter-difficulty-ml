@@ -12,7 +12,10 @@ SPA React + Vite pour prédire la difficulté d'un combat D&D 5e via l'API du pr
 - **Verdict** : difficulté prédite (Facile / Moyen / Difficile / Mortel) avec confiance
   et probabilités par classe.
 - **Session persistante** : le groupe et les monstres sont sauvegardés dans le
-  `localStorage` — fermer l'onglet par accident ne fait rien perdre.
+  `localStorage` — fermer l'onglet par accident ne fait rien perdre. Un bouton
+  "Réinitialiser la session" permet de repartir de zéro.
+- **Avertissement solo** : un groupe de 1 affiche un rappel que le modèle est
+  entraîné sur des groupes de 2 à 6 (extrapolation).
 - Design mobile-first, thème D&D (parchemin, or, rouge sang, police Cinzel).
 
 ## Lancer en développement

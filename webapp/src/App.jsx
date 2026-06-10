@@ -65,6 +65,15 @@ export default function App() {
   const totalMonsters = monsters.reduce((sum, m) => sum + m.qty, 0);
   const canPredict = monsters.length > 0 && !loading;
 
+  const resetSession = () => {
+    if (!window.confirm("Réinitialiser le groupe et les monstres ?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    setCharacters([newCharacter()]);
+    setMonsters([]);
+    setResult(null);
+    setError(null);
+  };
+
   const handlePredict = async () => {
     setLoading(true);
     setError(null);
@@ -110,6 +119,12 @@ export default function App() {
               + Ajouter un personnage
             </button>
           </div>
+          {characters.length === 1 && (
+            <p className="warning-box">
+              ⚠️ Le modèle a été entraîné sur des groupes de 2 à 6 aventuriers — la
+              prédiction pour un solo est une extrapolation, à prendre avec prudence.
+            </p>
+          )}
         </section>
 
         <section>
@@ -140,6 +155,12 @@ export default function App() {
           {totalMonsters > 0 &&
             ` contre ${totalMonsters} monstre${totalMonsters > 1 ? "s" : ""}`}
         </p>
+
+        <div className="reset-row">
+          <button type="button" className="btn btn-reset" onClick={resetSession}>
+            🧹 Réinitialiser la session
+          </button>
+        </div>
 
         {error && <div className="error-box">⚠️ {error}</div>}
 
