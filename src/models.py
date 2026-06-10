@@ -10,15 +10,23 @@ Usage :
 
 from __future__ import annotations
 
+import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 import joblib
 import pandas as pd
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+)
 from xgboost import XGBClassifier
 
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
 MODELS_DIR    = Path(__file__).resolve().parent.parent / "models"
+RESULTS_DIR   = Path(__file__).resolve().parent.parent / "results"
 
 LABEL_NAMES: list[str] = ["Easy", "Medium", "Hard", "Deadly"]
 
@@ -84,8 +92,8 @@ def evaluate(
     X_test: pd.DataFrame,
     y_train: pd.Series,
     y_test: pd.Series,
-) -> dict[str, float]:
-    """Affiche et retourne les métriques train/test.
+) -> dict:
+    """Calcule, affiche et retourne les métriques complètes train/test.
 
     Args:
         model:   Modèle entraîné.
@@ -95,19 +103,48 @@ def evaluate(
         y_test:  Labels de test.
 
     Returns:
-        Dictionnaire {"acc_train": ..., "acc_test": ..., "gap_pp": ...}.
+        Dictionnaire structuré avec accuracy, gap, F1 par classe et matrice de confusion.
     """
-    acc_train = accuracy_score(y_train, model.predict(X_train))
-    acc_test  = accuracy_score(y_test,  model.predict(X_test))
+    y_pred_train = model.predict(X_train)
+    y_pred_test  = model.predict(X_test)
+
+    acc_train = float(accuracy_score(y_train, y_pred_train))
+    acc_test  = float(accuracy_score(y_test,  y_pred_test))
     gap       = (acc_train - acc_test) * 100
+
+    f1_per_class = f1_score(y_test, y_pred_test, average=None)
+    cm           = confusion_matrix(y_test, y_pred_test).tolist()
 
     print(f"Accuracy train : {acc_train:.3f} ({acc_train * 100:.1f}%)")
     print(f"Accuracy test  : {acc_test:.3f}  ({acc_test * 100:.1f}%)")
     print(f"Écart (gap)    : {gap:.1f}pp")
     print()
-    print(classification_report(y_test, model.predict(X_test), target_names=LABEL_NAMES))
+    print(classification_report(y_test, y_pred_test, target_names=LABEL_NAMES))
 
-    return {"acc_train": float(acc_train), "acc_test": float(acc_test), "gap_pp": float(gap)}
+    return {
+        "acc_train":        acc_train,
+        "acc_test":         acc_test,
+        "gap_pp":           float(gap),
+        "f1_per_class":     {label: round(float(f1), 4) for label, f1 in zip(LABEL_NAMES, f1_per_class)},
+        "confusion_matrix": cm,
+        "hyperparameters":  XGB_PARAMS,
+    }
+
+
+def save_metrics(metrics: dict, path: Path) -> None:
+    """Sauvegarde les métriques dans un fichier JSON horodaté.
+
+    Args:
+        metrics: Dictionnaire retourné par evaluate().
+        path:    Chemin du fichier JSON de sortie.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "trained_at": datetime.now(timezone.utc).isoformat(),
+        **metrics,
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    print(f"Métriques sauvegardées : {path}")
 
 
 def save_model(model: XGBClassifier, path: Path) -> None:
@@ -145,10 +182,11 @@ def main() -> None:
     print("Entraînement terminé.\n")
 
     print("=== Évaluation ===")
-    evaluate(model, X_train, X_test, y_train, y_test)
+    metrics = evaluate(model, X_train, X_test, y_train, y_test)
 
     print("=== Sauvegarde ===")
     save_model(model, MODELS_DIR / "xgboost_difficulty.joblib")
+    save_metrics(metrics, RESULTS_DIR / "metrics.json")
 
 
 if __name__ == "__main__":

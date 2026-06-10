@@ -5,12 +5,13 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
+import json
 import numpy as np
 import pandas as pd
 import pytest
 from xgboost import XGBClassifier
 
-from src.models import evaluate, load_model, save_model, train_xgboost
+from src.models import evaluate, load_model, save_metrics, save_model, train_xgboost
 
 
 # ---------------------------------------------------------------------------
@@ -57,7 +58,8 @@ def test_evaluate_returns_dict_with_keys(tiny_splits) -> None:
     X_train, X_test, y_train, y_test = tiny_splits
     model = train_xgboost(X_train, y_train)
     metrics = evaluate(model, X_train, X_test, y_train, y_test)
-    assert set(metrics.keys()) == {"acc_train", "acc_test", "gap_pp"}
+    assert {"acc_train", "acc_test", "gap_pp", "f1_per_class",
+            "confusion_matrix", "hyperparameters"}.issubset(metrics.keys())
 
 
 def test_evaluate_accuracy_between_0_and_1(tiny_splits) -> None:
@@ -109,3 +111,62 @@ def test_loaded_model_same_predictions(tiny_splits) -> None:
         save_model(model, path)
         loaded = load_model(path)
     np.testing.assert_array_equal(model.predict(X_test), loaded.predict(X_test))
+
+
+# ---------------------------------------------------------------------------
+# save_metrics
+# ---------------------------------------------------------------------------
+
+
+def test_save_metrics_creates_json(tiny_splits) -> None:
+    X_train, X_test, y_train, y_test = tiny_splits
+    model   = train_xgboost(X_train, y_train)
+    metrics = evaluate(model, X_train, X_test, y_train, y_test)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "metrics.json"
+        save_metrics(metrics, path)
+        assert path.exists()
+
+
+def test_save_metrics_valid_json(tiny_splits) -> None:
+    X_train, X_test, y_train, y_test = tiny_splits
+    model   = train_xgboost(X_train, y_train)
+    metrics = evaluate(model, X_train, X_test, y_train, y_test)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "metrics.json"
+        save_metrics(metrics, path)
+        data = json.loads(path.read_text())
+
+    assert "trained_at" in data
+    assert "acc_train" in data
+    assert "acc_test" in data
+    assert "gap_pp" in data
+    assert "f1_per_class" in data
+    assert "confusion_matrix" in data
+    assert "hyperparameters" in data
+
+
+def test_save_metrics_f1_keys(tiny_splits) -> None:
+    X_train, X_test, y_train, y_test = tiny_splits
+    model   = train_xgboost(X_train, y_train)
+    metrics = evaluate(model, X_train, X_test, y_train, y_test)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "metrics.json"
+        save_metrics(metrics, path)
+        data = json.loads(path.read_text())
+
+    assert set(data["f1_per_class"].keys()) == {"Easy", "Medium", "Hard", "Deadly"}
+
+
+def test_save_metrics_confusion_matrix_shape(tiny_splits) -> None:
+    X_train, X_test, y_train, y_test = tiny_splits
+    model   = train_xgboost(X_train, y_train)
+    metrics = evaluate(model, X_train, X_test, y_train, y_test)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "metrics.json"
+        save_metrics(metrics, path)
+        data = json.loads(path.read_text())
+
+    cm = data["confusion_matrix"]
+    assert len(cm) == 4
+    assert all(len(row) == 4 for row in cm)

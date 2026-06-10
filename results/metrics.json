@@ -1,0 +1,49 @@
+{
+  "trained_at": "2026-06-10T20:25:58.496723+00:00",
+  "acc_train": 1.0,
+  "acc_test": 0.82,
+  "gap_pp": 18.000000000000004,
+  "f1_per_class": {
+    "Easy": 0.9266,
+    "Medium": 0.7431,
+    "Hard": 0.7233,
+    "Deadly": 0.8929
+  },
+  "confusion_matrix": [
+    [
+      183,
+      17,
+      0,
+      0
+    ],
+    [
+      12,
+      149,
+      39,
+      0
+    ],
+    [
+      0,
+      34,
+      149,
+      17
+    ],
+    [
+      0,
+      1,
+      24,
+      175
+    ]
+  ],
+  "hyperparameters": {
+    "n_estimators": 300,
+    "learning_rate": 0.1,
+    "max_depth": 6,
+    "subsample": 0.8,
+    "objective": "multi:softmax",
+    "num_class": 4,
+    "eval_metric": "mlogloss",
+    "random_state": 42,
+    "n_jobs": -1
+  }
+}
