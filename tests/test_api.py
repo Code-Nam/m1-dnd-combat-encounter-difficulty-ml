@@ -137,7 +137,12 @@ def test_predict_missing_required_field_returns_422(client: TestClient) -> None:
 
 
 def test_predict_party_size_too_small_returns_422(client: TestClient) -> None:
-    assert client.post("/predict", json={**VALID_ENCOUNTER, "party_size": 1}).status_code == 422
+    assert client.post("/predict", json={**VALID_ENCOUNTER, "party_size": 0}).status_code == 422
+
+
+def test_predict_solo_party_accepted(client: TestClient) -> None:
+    """Groupe de 1 accepté (extrapolation — le modèle est entraîné sur 2-6)."""
+    assert client.post("/predict", json={**VALID_ENCOUNTER, "party_size": 1}).status_code == 200
 
 
 def test_predict_party_size_too_large_returns_422(client: TestClient) -> None:

@@ -3,6 +3,9 @@
 venv/
 env/
 
+# Environnement local (garder les .env.example versionnés)
+api/.env
+
 # Données (générées localement)
 data/
 

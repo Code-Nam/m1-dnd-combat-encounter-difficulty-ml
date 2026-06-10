@@ -10,12 +10,15 @@ Usage :
 
 from __future__ import annotations
 
+import os
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncGenerator
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -23,7 +26,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.infer import build_feature_vector
 from src.models import LABEL_NAMES, load_model
 
-MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "xgboost_difficulty.joblib"
+# Configuration via api/.env (voir api/.env.example) — valeurs par défaut si absent.
+load_dotenv(Path(__file__).resolve().parent / ".env")
+
+ROOT_DIR     = Path(__file__).resolve().parent.parent
+MODEL_PATH   = ROOT_DIR / os.environ.get("MODEL_PATH", "models/xgboost_difficulty.joblib")
+CORS_ORIGINS = [o.strip() for o in os.environ.get("CORS_ORIGINS", "*").split(",")]
 
 _model = None
 
@@ -47,13 +55,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Autorise la webapp (Vite, port 5173) à appeler l'API depuis le navigateur.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # ── Schémas d'entrée / sortie ──────────────────────────────────────────────────
 
 class EncounterInput(BaseModel):
     """Stats brutes d'une rencontre D&D 5e."""
 
-    party_size:      int   = Field(..., ge=2, le=6,   description="Nombre de personnages")
+    # Le modèle a été entraîné sur des groupes de 2 à 6 — une prédiction pour
+    # un groupe de 1 est une extrapolation hors distribution d'entraînement.
+    party_size:      int   = Field(..., ge=1, le=6,   description="Nombre de personnages")
     party_avg_level: float = Field(..., ge=1, le=20,  description="Niveau moyen du groupe")
     party_avg_hp:    float = Field(..., gt=0,          description="HP moyen des personnages")
     party_avg_ac:    float = Field(..., gt=0,          description="AC moyen des personnages")
