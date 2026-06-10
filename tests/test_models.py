@@ -1,0 +1,111 @@
+"""Tests unitaires pour src/models.py."""
+
+from __future__ import annotations
+
+import tempfile
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pytest
+from xgboost import XGBClassifier
+
+from src.models import evaluate, load_model, save_model, train_xgboost
+
+
+# ---------------------------------------------------------------------------
+# train_xgboost
+# ---------------------------------------------------------------------------
+
+
+def test_train_xgboost_returns_xgbclassifier(tiny_splits) -> None:
+    X_train, _, y_train, _ = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    assert isinstance(model, XGBClassifier)
+
+
+def test_train_xgboost_can_predict(tiny_splits) -> None:
+    X_train, X_test, y_train, _ = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    preds = model.predict(X_test)
+    assert len(preds) == len(X_test)
+    assert set(preds).issubset({0, 1, 2, 3})
+
+
+def test_train_xgboost_custom_params(tiny_splits) -> None:
+    X_train, _, y_train, _ = tiny_splits
+    model = train_xgboost(X_train, y_train, params={"n_estimators": 10, "max_depth": 3})
+    assert model.n_estimators == 10
+    assert model.max_depth == 3
+
+
+def test_train_xgboost_perfect_train_accuracy(tiny_splits) -> None:
+    """Un modèle sans contrainte doit mémoriser les données d'entraînement."""
+    X_train, _, y_train, _ = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    preds = model.predict(X_train)
+    accuracy = (preds == y_train.values).mean()
+    assert accuracy == 1.0
+
+
+# ---------------------------------------------------------------------------
+# evaluate
+# ---------------------------------------------------------------------------
+
+
+def test_evaluate_returns_dict_with_keys(tiny_splits) -> None:
+    X_train, X_test, y_train, y_test = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    metrics = evaluate(model, X_train, X_test, y_train, y_test)
+    assert set(metrics.keys()) == {"acc_train", "acc_test", "gap_pp"}
+
+
+def test_evaluate_accuracy_between_0_and_1(tiny_splits) -> None:
+    X_train, X_test, y_train, y_test = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    metrics = evaluate(model, X_train, X_test, y_train, y_test)
+    assert 0.0 <= metrics["acc_train"] <= 1.0
+    assert 0.0 <= metrics["acc_test"]  <= 1.0
+
+
+def test_evaluate_gap_equals_difference(tiny_splits) -> None:
+    X_train, X_test, y_train, y_test = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    metrics = evaluate(model, X_train, X_test, y_train, y_test)
+    expected_gap = (metrics["acc_train"] - metrics["acc_test"]) * 100
+    assert abs(metrics["gap_pp"] - expected_gap) < 1e-6
+
+
+# ---------------------------------------------------------------------------
+# save_model / load_model
+# ---------------------------------------------------------------------------
+
+
+def test_save_model_creates_file(tiny_splits) -> None:
+    X_train, _, y_train, _ = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "model.joblib"
+        save_model(model, path)
+        assert path.exists()
+
+
+def test_load_model_returns_xgbclassifier(tiny_splits) -> None:
+    X_train, _, y_train, _ = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "model.joblib"
+        save_model(model, path)
+        loaded = load_model(path)
+    assert isinstance(loaded, XGBClassifier)
+
+
+def test_loaded_model_same_predictions(tiny_splits) -> None:
+    """Le modèle chargé doit produire exactement les mêmes prédictions."""
+    X_train, X_test, y_train, _ = tiny_splits
+    model = train_xgboost(X_train, y_train)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "model.joblib"
+        save_model(model, path)
+        loaded = load_model(path)
+    np.testing.assert_array_equal(model.predict(X_test), loaded.predict(X_test))
