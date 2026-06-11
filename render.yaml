@@ -1,0 +1,19 @@
+# Configuration Render (Infrastructure as Code) pour l'API de prédiction.
+# Render lit ce fichier à la racine du repo lors d'un "Blueprint deploy".
+# Docs : https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: dnd-difficulty-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    # Endpoint "/" de l'API — utilisé par Render pour vérifier que le service est vivant.
+    healthCheckPath: /
+    envVars:
+      # Chemin du modèle entraîné, relatif à la racine du projet (committé dans models/).
+      - key: MODEL_PATH
+        value: models/xgboost_difficulty.joblib
+      # Origines CORS autorisées. À remplacer par l'URL Vercel après le 1er déploiement,
+      # p.ex. https://dnd-difficulty.vercel.app (plusieurs URLs séparées par des virgules).
+      - key: CORS_ORIGINS
+        value: "*"

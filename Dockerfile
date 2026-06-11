@@ -11,4 +11,5 @@ COPY models/ ./models/
 
 EXPOSE 8000
 
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Render (et autres PaaS) injectent le port via $PORT ; fallback 8000 en local.
+CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
